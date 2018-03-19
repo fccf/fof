@@ -1,8 +1,8 @@
 program matrix_test
-  use matrix_object
+  use fof_matrix
   implicit none
 
-  type(m_t) :: m
+  type(matrix) :: m
   integer   :: im(2,2)
   real      :: rm(2,2)
   logical   :: lm(2,2)
@@ -14,27 +14,20 @@ program matrix_test
   cm = reshape(['ab','cd','ef','gh'],[2,2])
 
   m = im
-  write(*,'(a)',advance='no') "integer matrix:"
-  call m%write()
+  write(*,*) "integer matrix = "//m%to_str()
   im = m
 
   m = rm
-  write(*,'(/,a)',advance='no') "real matrix:"
-  call m%write()
+  write(*,*) "real matrix = "//m%to_str()
   rm = m
 
   m = lm
-  write(*,'(/,a)',advance='no') "logical matrix:"
-  call m%write()
+  write(*,*) "logical matrix = "//m%to_str()
   lm =m
 
   m = cm
-  write(*,'(/,a)',advance='no') "character matrix:"
-  call m%write()
+  write(*,*) "character matrix = "//m%to_str()
   cm = m
 
-  write(*,*)
-
-  call m%destory()
 
 end program matrix_test

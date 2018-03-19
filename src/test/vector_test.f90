@@ -1,8 +1,8 @@
 program vector_test
-  use vector_object
+  use fof_vector
   implicit none
 
-  type(v_t) :: v
+  type(vector) :: v
 
   integer :: iv(4)
   real    :: rv(4)
@@ -15,27 +15,21 @@ program vector_test
   cv = ['ab','cd','ef','gh']
 
   v = iv
-  write(*,'(a)',advance='no') "integer vector:"
-  call v%write()
+  write(*,*) "integer vector = "//v%to_str()
   iv = v
 
   v = rv
-  write(*,'(/,a)',advance='no') "real vector:"
-  call v%write()
+  write(*,*) "real vector = "//v%to_str()
   rv = v
 
   v = lv
-  write(*,'(/,a)',advance='no') "logical vector:"
-  call v%write()
+  write(*,*) "logical vector = "//v%to_str()
   lv =v
 
   v = cv
-  write(*,'(/,a)',advance='no') "character vector:"
-  call v%write()
+  write(*,*) "character vector = "//v%to_str()
   cv = v
 
-  write(*,*)
 
-  call v%destory()
 
 end program vector_test
