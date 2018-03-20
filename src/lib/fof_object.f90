@@ -2,6 +2,7 @@ module fof_object
   use fof_scalar
   use fof_vector
   use fof_matrix
+  use fof_string
   implicit none
 
 
@@ -11,7 +12,7 @@ module fof_object
 
 
   private
-
+  character(*), parameter  :: path_separator_ = '/'
 
   type, extends(scalar) :: object
     !< scalar object list
@@ -177,7 +178,7 @@ contains
 
     o_p => this%o_p(name)
     if (associated(o_p)) then
-      error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
     else
       allocate(o_p)
       o_p%name = name
@@ -255,27 +256,54 @@ contains
 
 
 
-  subroutine fof_add_scalar(this, name, value)
+  recursive subroutine fof_add_scalar(this, path, value)
     !< add scalar object to the list
     class(fof_list), intent(inout) :: this
-    character(*), intent(in) :: name
+    character(*), intent(in) :: path
     class(*), intent(in) :: value
 
+    character(:),allocatable :: lpath, name
     type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
 
     o_p => this%o_p(name)
     if (associated(o_p)) then
-      error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%add(lpath,value)
+        class default
+        o_p%name = name
+        ! o_p%value = scalar(value)
+        o_p%value = value
+        call this%append(o_p)
+      end select
+      
     else
       allocate(o_p)
-      o_p%name = name
-      o_p%value = scalar(value)
-      ! o_p%value = value
+      if(sp>1) then
+        o_p%name = name
+        allocate(fof_list :: o_p%value)
+        select type(v_p =>o_p%value)
+        type is(fof_list)
+          call v_p%add(lpath, value)
+        end select
+      else
+        o_p%name = name
+        o_p%value = value
+      endif
       call this%append(o_p)
     end if
 
   end subroutine fof_add_scalar
-
 
 
 
@@ -408,6 +436,8 @@ contains
         s = s // ': '//v_p%to_str(vsep=',')
       type is (matrix)
         s = s // ': '//v_p%to_str(vsep=',',msep=',')
+        class default
+        s = s // ': '//to_str(v_p)
       end select
       o_p => o_p%next
     end do

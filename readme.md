@@ -1,4 +1,3 @@
-
 # FOF
 **Fortran Object Format**
 
@@ -6,5 +5,3 @@
   - [ ] scalar_object
   - [ ] vector_object
   - [ ] matrix_object
-  - [ ] tensor_object
-  
