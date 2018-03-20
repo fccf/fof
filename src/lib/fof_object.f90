@@ -286,7 +286,7 @@ contains
         o_p%value = value
         call this%append(o_p)
       end select
-      
+
     else
       allocate(o_p)
       if(sp>1) then
@@ -307,21 +307,50 @@ contains
 
 
 
-  subroutine fof_add_vector(this, name, value)
+  recursive subroutine fof_add_vector(this, path, value)
     !< add vector object to the list
     class(fof_list), intent(inout) :: this
-    character(*), intent(in) :: name
+    character(*), intent(in) :: path
     class(*), intent(in) :: value(:)
 
+    character(:),allocatable :: lpath, name
     type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
 
     o_p => this%o_p(name)
     if (associated(o_p)) then
-      error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%add(lpath,value)
+        class default
+        o_p%name = name
+        ! o_p%value = scalar(value)
+        o_p%value = vector(value)
+        call this%append(o_p)
+      end select
+
     else
       allocate(o_p)
-      o_p%name = name
-      o_p%value = vector(value)
+      if(sp>1) then
+        o_p%name = name
+        allocate(fof_list :: o_p%value)
+        select type(v_p =>o_p%value)
+        type is(fof_list)
+          call v_p%add(lpath, value)
+        end select
+      else
+        o_p%name = name
+        o_p%value = vector(value)
+      endif
       call this%append(o_p)
     end if
 
@@ -330,23 +359,62 @@ contains
 
 
 
-  subroutine fof_add_matrix(this, name, value)
+  subroutine fof_add_matrix(this, path, value)
     !< add matrix object to the list
     class(fof_list), intent(inout) :: this
-    character(*), intent(in) :: name
+    character(*), intent(in) :: path
     class(*), intent(in) :: value(:,:)
 
+    character(:),allocatable :: lpath, name
     type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
 
     o_p => this%o_p(name)
     if (associated(o_p)) then
-      error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%add(lpath,value)
+        class default
+        o_p%name = name
+        ! o_p%value = scalar(value)
+        o_p%value = matrix(value)
+        call this%append(o_p)
+      end select
+
     else
       allocate(o_p)
-      o_p%name = name
-      o_p%value = matrix(value)
+      if(sp>1) then
+        o_p%name = name
+        allocate(fof_list :: o_p%value)
+        select type(v_p =>o_p%value)
+        type is(fof_list)
+          call v_p%add(lpath, value)
+        end select
+      else
+        o_p%name = name
+        o_p%value = matrix(value)
+      endif
       call this%append(o_p)
     end if
+
+    ! o_p => this%o_p(name)
+    ! if (associated(o_p)) then
+    !   error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+    ! else
+    !   allocate(o_p)
+    !   o_p%name = name
+    !   o_p%value = matrix(value)
+    !   call this%append(o_p)
+    ! end if
 
   end subroutine fof_add_matrix
 
