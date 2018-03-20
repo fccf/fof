@@ -56,11 +56,18 @@ module fof_object
     procedure :: v_p => fof_value_pointer
     !TODO:
     generic:: get => fof_get_scalar_integer, &
-    fof_get_vector_integer,&
-    fof_get_scalar_real,&
-    fof_get_scalar_logical,&
-    fof_get_scalar_character,&
-    fof_get_scalar_list
+                  &  fof_get_vector_integer,&
+                  &  fof_get_matrix_integer,&
+                  &  fof_get_scalar_real,&
+                  &  fof_get_vector_real,&
+                  &  fof_get_matrix_real,&
+                  &  fof_get_scalar_logical,&
+                  &  fof_get_vector_logical,&
+                  &  fof_get_matrix_logical,&
+                  &  fof_get_scalar_character,&
+                  &  fof_get_vector_character,&
+                  &  fof_get_matrix_character,&
+                  &  fof_get_scalar_list
 
 
     !---------
@@ -79,11 +86,18 @@ module fof_object
     !----------
     procedure, private :: fof_add_scalar,fof_add_vector,fof_add_matrix
     procedure, private :: fof_get_scalar_integer, &
-    fof_get_vector_integer,&
-    fof_get_scalar_real, &
-    fof_get_scalar_logical, &
-    fof_get_scalar_character,&
-    fof_get_scalar_list
+                          fof_get_vector_integer,&
+                          fof_get_matrix_integer,&
+                          fof_get_scalar_real, &
+                          fof_get_vector_real,&
+                          fof_get_matrix_real,&
+                          fof_get_scalar_logical, &
+                          fof_get_vector_logical,&
+                          fof_get_matrix_logical,&
+                          fof_get_scalar_character,&
+                          fof_get_vector_character,&
+                          fof_get_matrix_character,&
+                          fof_get_scalar_list
   end type fof_list
 
 
@@ -458,6 +472,7 @@ contains
 
   end subroutine  fof_get_scalar_integer
 
+
   recursive subroutine  fof_get_vector_integer(this, path, value)
     class(fof_list), intent(in) :: this
     character(*), intent(in) :: path
@@ -494,6 +509,43 @@ contains
 
   end subroutine  fof_get_vector_integer
 
+  recursive subroutine  fof_get_matrix_integer(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    integer, allocatable, intent(out) :: value(:,:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (matrix)
+        value = v_p
+      class default
+        error stop "The object is not matrix type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_matrix_integer
+
+
   recursive subroutine  fof_get_scalar_real(this, path, value)
     class(fof_list), intent(in) :: this
     character(*), intent(in) :: path
@@ -529,6 +581,81 @@ contains
     end if
 
   end subroutine  fof_get_scalar_real
+
+
+
+  recursive subroutine  fof_get_vector_real(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    real, allocatable, intent(out) :: value(:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (vector)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_vector_real
+
+
+  recursive subroutine  fof_get_matrix_real(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    real, allocatable, intent(out) :: value(:,:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (matrix)
+        value = v_p
+      class default
+        error stop "The object is not matrix type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_matrix_real
 
 
   recursive subroutine  fof_get_scalar_logical(this, path, value)
@@ -568,6 +695,80 @@ contains
   end subroutine  fof_get_scalar_logical
 
 
+  recursive subroutine  fof_get_vector_logical(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    logical, allocatable, intent(out) :: value(:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (vector)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_vector_logical
+
+
+  recursive subroutine  fof_get_matrix_logical(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    logical, allocatable, intent(out) :: value(:,:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (matrix)
+        value = v_p
+      class default
+        error stop "The object is not matrix type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_matrix_logical
+
+
   recursive subroutine  fof_get_scalar_character(this, path, value)
     class(fof_list), intent(in) :: this
     character(*), intent(in) :: path
@@ -604,11 +805,84 @@ contains
 
   end subroutine  fof_get_scalar_character
 
+  recursive subroutine  fof_get_vector_character(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    character(:), allocatable, intent(out) :: value(:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (vector)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_vector_character
+
+
+  recursive subroutine  fof_get_matrix_character(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    character(:), allocatable, intent(out) :: value(:,:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (matrix)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_matrix_character
+
 
   recursive subroutine  fof_get_scalar_list(this, path, value)
     class(fof_list), intent(in) :: this
     character(*), intent(in) :: path
-    type(fof_list),pointer, intent(out) :: value
+    type(fof_list), pointer, intent(out) :: value
 
     character(:),allocatable :: lpath, name
     type(object), pointer :: o_p
@@ -627,7 +901,7 @@ contains
       ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
       select type(v_p => o_p%value)
       type is(fof_list)
-        value = v_p
+        value => v_p
         call v_p%get(lpath,value)
         !
       class default
