@@ -27,6 +27,7 @@ program object_test2
     logical :: ls
     real    :: rs
     character(:), allocatable :: cs
+    type(fof_list), pointer :: fp
 
     call ff%get('fof/scalar/integer',is)
     call ff%get('fof/scalar/real',rs)
@@ -37,6 +38,14 @@ program object_test2
     write(*,*) 'rs = ',rs
     write(*,*) 'ls = ',ls
     write(*,*) 'cs = ',cs
+
+    call ff%get('fof/scalar',fp)
+    write(*,*) fp%to_json()
+
+    call fp%get('integer', is)
+    write(*,*) 'is = ',is
+
+
   end block
 
 

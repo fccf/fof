@@ -58,7 +58,8 @@ module fof_object
     generic:: get => fof_get_scalar_integer, &
     fof_get_scalar_real,&
     fof_get_scalar_logical,&
-    fof_get_scalar_character
+    fof_get_scalar_character,&
+    fof_get_scalar_list
 
 
     !---------
@@ -79,7 +80,8 @@ module fof_object
     procedure, private :: fof_get_scalar_integer, &
     fof_get_scalar_real, &
     fof_get_scalar_logical, &
-    fof_get_scalar_character
+    fof_get_scalar_character,&
+    fof_get_scalar_list
   end type fof_list
 
 
@@ -564,6 +566,39 @@ contains
     end if
 
   end subroutine  fof_get_scalar_character
+
+
+  recursive subroutine  fof_get_scalar_list(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    type(fof_list),pointer, intent(out) :: value
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        value = v_p
+        call v_p%get(lpath,value)
+        !
+      class default
+        error stop "The object is not fof_list type"
+      end select
+    end if
+
+  end subroutine  fof_get_scalar_list
 
 
   function fof_value_pointer(this, name) result(v_p)
