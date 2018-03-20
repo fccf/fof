@@ -24,6 +24,7 @@ program object_test2
 
   block
     integer :: is
+    integer, allocatable :: iv(:)
     logical :: ls
     real    :: rs
     character(:), allocatable :: cs
@@ -39,11 +40,11 @@ program object_test2
     write(*,*) 'ls = ',ls
     write(*,*) 'cs = ',cs
 
-    call ff%get('fof/scalar',fp)
+    call ff%get('fof/vector',fp)
     write(*,*) fp%to_json()
 
-    call fp%get('integer', is)
-    write(*,*) 'is = ',is
+    call fp%get('integer', iv)
+    write(*,*) 'iv = ',iv
 
 
   end block

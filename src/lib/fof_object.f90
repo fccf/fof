@@ -56,6 +56,7 @@ module fof_object
     procedure :: v_p => fof_value_pointer
     !TODO:
     generic:: get => fof_get_scalar_integer, &
+    fof_get_vector_integer,&
     fof_get_scalar_real,&
     fof_get_scalar_logical,&
     fof_get_scalar_character,&
@@ -78,6 +79,7 @@ module fof_object
     !----------
     procedure, private :: fof_add_scalar,fof_add_vector,fof_add_matrix
     procedure, private :: fof_get_scalar_integer, &
+    fof_get_vector_integer,&
     fof_get_scalar_real, &
     fof_get_scalar_logical, &
     fof_get_scalar_character,&
@@ -456,6 +458,41 @@ contains
 
   end subroutine  fof_get_scalar_integer
 
+  recursive subroutine  fof_get_vector_integer(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    integer, allocatable, intent(out) :: value(:)
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (vector)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_vector_integer
 
   recursive subroutine  fof_get_scalar_real(this, path, value)
     class(fof_list), intent(in) :: this

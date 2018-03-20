@@ -114,7 +114,7 @@ contains
   subroutine matrix_to_logical (value, this)
     !< get logical value
     class(matrix), intent(in) :: this
-    logical, intent(out) :: value(:,:)
+    logical, allocatable, intent(out) :: value(:,:)
 
     select type (v => this%value)
     type is (logical)
@@ -147,7 +147,7 @@ contains
     !< convert to integer integer value.
 
     type(matrix), intent(in) :: this
-    integer, intent(out)  :: value(:,:)
+    integer, allocatable, intent(out)  :: value(:,:)
 
     select type (v => this%value)
     type is (integer)
@@ -163,7 +163,7 @@ contains
   subroutine matrix_to_real (value, this)
     !< convert to real real value.
     type(matrix), intent(in) :: this
-    real, intent(out) :: value(:,:)
+    real, allocatable, intent(out) :: value(:,:)
     select type (v => this%value)
     type is (real)
       value = v

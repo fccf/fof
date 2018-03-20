@@ -118,7 +118,7 @@ contains
   subroutine vector_to_logical (value, this)
     !< get logical value
     class(vector), intent(in) :: this
-    logical, intent(out) :: value(:)
+    logical, allocatable, intent(out) :: value(:)
 
     select type (v => this%value)
     type is (logical)
@@ -150,10 +150,11 @@ contains
   subroutine vector_to_integer (value, this)
     !< convert to integer value.
     type(vector), intent(in) :: this
-    integer, intent(out)  :: value(:)
+    integer, allocatable, intent(out)  :: value(:)
 
     select type (v => this%value)
     type is (integer)
+      ! allocate(value, source = v)
       value = v
     class default
       error stop " Can't convert TYPE(vector) to INTEGER"
@@ -166,7 +167,7 @@ contains
     !< convert to real value.
 
     type(vector), intent(in) :: this
-    real, intent(out) :: value(:)
+    real, allocatable, intent(out) :: value(:)
 
     select type (v => this%value)
     type is (real)

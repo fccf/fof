@@ -1,33 +1,30 @@
 program matrix_test
   use fof_matrix
+  use fof_test_data
   implicit none
 
   type(matrix) :: m
-  integer   :: im(2,2)
-  real      :: rm(2,2)
-  logical   :: lm(2,2)
-  character(:),allocatable :: cm(:,:)
+  integer, allocatable :: aim(:,:)
+  real   , allocatable :: arm(:,:)
+  logical, allocatable :: alm(:,:)
+  character(:), allocatable :: acm(:,:)
 
-  im = reshape([1,2,3,4],[2,2])
-  rm = reshape([1.,2.,3.,4.],[2,2])
-  lm = reshape([.TRUE.,.FALSE.,.FALSE.,.TRUE.],[2,2])
-  cm = reshape(['ab','cd','ef','gh'],[2,2])
 
   m = im
   write(*,*) "integer matrix = "//m%to_str()
-  im = m
+  aim = m
 
   m = rm
   write(*,*) "real matrix = "//m%to_str()
-  rm = m
+  arm = m
 
   m = lm
   write(*,*) "logical matrix = "//m%to_str()
-  lm =m
+  alm =m
 
   m = cm
   write(*,*) "character matrix = "//m%to_str()
-  cm = m
+  acm = m
 
 
 end program matrix_test

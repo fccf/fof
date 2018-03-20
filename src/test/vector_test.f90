@@ -1,35 +1,36 @@
 program vector_test
   use fof_vector
+  use fof_test_data
   implicit none
 
   type(vector) :: v
 
-  integer :: iv(4)
-  real    :: rv(4)
-  logical :: lv(4) = [.TRUE.,.FALSE.,.FALSE.,.TRUE.]
-  character(:), allocatable :: cv(:)
+  integer, allocatable :: aiv(:)
+  real   , allocatable :: arv(:)
+  logical, allocatable :: alv(:)
+  character(:), allocatable :: acv(:)
 
-  iv = [1,2,3,4]
-  rv = [1.,2.,3.,4.]
-  lv = [.TRUE.,.FALSE.,.FALSE.,.TRUE.]
-  cv = ['ab','cd','ef','gh']
+
 
   v = iv
   write(*,*) "integer vector = "//v%to_str()
-  iv = v
+  aiv = v
+  write(*,*) "allocatable vector = ", aiv
 
   v = rv
   write(*,*) "real vector = "//v%to_str()
-  rv = v
+  arv = v
+  write(*,*) "allocatable vector = ", arv
 
   v = lv
   write(*,*) "logical vector = "//v%to_str()
-  lv =v
+  alv =v
+  write(*,*) "allocatable vector = ", alv
 
   v = cv
   write(*,*) "character vector = "//v%to_str()
-  cv = v
-
+  acv = v
+  write(*,*) "allocatable vector = ", acv
 
 
 end program vector_test
