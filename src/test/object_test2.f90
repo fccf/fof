@@ -1,27 +1,10 @@
-program file_test
+program object_test2
   use fof_object
+  use fof_test_data
   implicit none
 
   type(fof_list) :: ff
-  integer   :: im(2,2), iv(4), is
-  real      :: rm(2,2), rv(4), rs
-  logical   :: lm(2,2), lv(4), ls
-  character(:),allocatable :: cm(:,:), cv(:), cs
 
-  is = 1
-  rs = 1.0
-  ls = .TRUE.
-  cs = 'xxxxxxx'
-
-  iv = [1,2,3,4]
-  rv = [1.,2.,3.,4.]
-  lv = [.TRUE.,.FALSE.,.FALSE.,.TRUE.]
-  cv = ['ab','cd','ef','gh']
-
-  im = reshape([1,2,3,4],[2,2])
-  rm = reshape([1.,2.,3.,4.],[2,2])
-  lm = reshape([.TRUE.,.FALSE.,.FALSE.,.TRUE.],[2,2])
-  cm = reshape(['ab','cd','ef','gh'],[2,2])
 
   call ff%add('fof/scalar/integer',is)
   call ff%add('fof/scalar/real',rs)
@@ -41,4 +24,4 @@ program file_test
   write(*,*) ff%to_json()
 
 
-end program file_test
+end program object_test2

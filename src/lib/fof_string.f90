@@ -28,7 +28,7 @@ contains
       end if
       s = trim(adjustl(ls))
     type is(character(*))
-      s = trim(adjustl(v_p))
+      s = '"'//trim(adjustl(v_p))//'"'
 
       class default
       write(ls,'(a)') '***'
