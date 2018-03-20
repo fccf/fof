@@ -11,6 +11,12 @@ program object_test
   call fp%add('vector',iv)
   call fp%add('matrix',im)
   call fo%add('integer', fp)
+
+  block
+    integer :: is
+    call fp%get('scalar', is)
+    write(*,*) 'is = ',is
+  end block
   nullify(fp)
 
 
@@ -36,6 +42,13 @@ program object_test
   nullify(fp)
 
   write(*,*) fo%to_json()
+
+  block
+    integer :: is
+    call fo%get('integer/scalar', is)
+    write(*,*) 'is = ',is
+  end block
+
   call fo%destory()
   nullify(fo)
 

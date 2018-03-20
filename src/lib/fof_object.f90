@@ -36,7 +36,10 @@ module fof_object
     !---------------
     !> constructor
     !--------------
-    generic   :: add    => fof_add_scalar,fof_add_vector, fof_add_matrix
+    generic   :: add    => fof_add_scalar,&
+                          fof_add_vector, &
+                          fof_add_matrix
+
     procedure :: insert => fof_insert_obj
     procedure :: update => fof_update_obj
     procedure :: append => fof_append_obj
@@ -52,7 +55,10 @@ module fof_object
     procedure :: o_p => fof_obj_pointer
     procedure :: v_p => fof_value_pointer
     !TODO:
-    ! procedure :: get => get_scalar, get_vector, get_tensor
+    generic:: get => fof_get_scalar_integer, &
+    fof_get_scalar_real,&
+    fof_get_scalar_logical,&
+    fof_get_scalar_character
 
 
     !---------
@@ -70,6 +76,10 @@ module fof_object
     !> private
     !----------
     procedure, private :: fof_add_scalar,fof_add_vector,fof_add_matrix
+    procedure, private :: fof_get_scalar_integer, &
+    fof_get_scalar_real, &
+    fof_get_scalar_logical, &
+    fof_get_scalar_character
   end type fof_list
 
 
@@ -406,19 +416,154 @@ contains
       call this%append(o_p)
     end if
 
-    ! o_p => this%o_p(name)
-    ! if (associated(o_p)) then
-    !   error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
-    ! else
-    !   allocate(o_p)
-    !   o_p%name = name
-    !   o_p%value = matrix(value)
-    !   call this%append(o_p)
-    ! end if
-
   end subroutine fof_add_matrix
 
+  recursive subroutine  fof_get_scalar_integer(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    integer, intent(out) :: value
 
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (integer)
+        value = v_p
+      class default
+        error stop "The object is not integer type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_scalar_integer
+
+
+  recursive subroutine  fof_get_scalar_real(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    real, intent(out) :: value
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (real)
+        value = v_p
+      class default
+        error stop "The object is not real type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_scalar_real
+
+
+  recursive subroutine  fof_get_scalar_logical(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    logical, intent(out) :: value
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (logical)
+        value = v_p
+      class default
+        error stop "The object is not logical type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_scalar_logical
+
+
+  recursive subroutine  fof_get_scalar_character(this, path, value)
+    class(fof_list), intent(in) :: this
+    character(*), intent(in) :: path
+    character(:),allocatable, intent(out) :: value
+
+    character(:),allocatable :: lpath, name
+    type(object), pointer :: o_p
+    integer :: ls, sp
+
+    lpath = trim(adjustl(path))
+    ls = len(lpath)
+    sp = index(lpath, path_separator_)
+
+    name = lpath
+    if(sp > 1) name = lpath(1:sp-1)
+    lpath = lpath(sp+1:)
+
+    o_p => this%o_p(name)
+
+    if (associated(o_p)) then
+      ! error stop "'"//name// "' has already existed, call this%update(name, value) to update it."
+      select type(v_p => o_p%value)
+      type is(fof_list)
+        call v_p%get(lpath,value)
+      type is (character(*))
+        value = v_p
+      class default
+        error stop "The object is not character type"
+      end select
+
+    else
+      error stop "The object doesn't exist"
+    end if
+
+  end subroutine  fof_get_scalar_character
 
 
   function fof_value_pointer(this, name) result(v_p)

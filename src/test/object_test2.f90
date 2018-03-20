@@ -5,7 +5,6 @@ program object_test2
 
   type(fof_list) :: ff
 
-
   call ff%add('fof/scalar/integer',is)
   call ff%add('fof/scalar/real',rs)
   call ff%add('fof/scalar/logical',ls)
@@ -22,6 +21,23 @@ program object_test2
   call ff%add('fof/matrix/string',cm)
 
   write(*,*) ff%to_json()
+
+  block
+    integer :: is
+    logical :: ls
+    real    :: rs
+    character(:), allocatable :: cs
+
+    call ff%get('fof/scalar/integer',is)
+    call ff%get('fof/scalar/real',rs)
+    call ff%get('fof/scalar/logical',ls)
+    call ff%get('fof/scalar/string',cs)
+
+    write(*,*) 'is = ',is
+    write(*,*) 'rs = ',rs
+    write(*,*) 'ls = ',ls
+    write(*,*) 'cs = ',cs
+  end block
 
 
 end program object_test2
